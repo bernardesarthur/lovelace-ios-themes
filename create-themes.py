@@ -4,6 +4,7 @@
 
 from pathlib import Path
 
+import base64
 import jinja2
 import yaml
 from PIL import Image
@@ -23,6 +24,12 @@ def average_color(fname):
     rgb_color = ImageColor.getrgb(hex_color)
     return "rgba({}, {}, {}, 0.4)".format(*rgb_color)
 
+
+def base64_encode_file(fname):
+    with open(fname, 'rb') as image_file:
+        extension = fname.suffix.split('.')[-1]
+        base64_utf8_str = base64.b64encode(image_file.read()).decode('utf-8')
+        return f'data:image/{extension};base64,{base64_utf8_str}'
 
 BACKGROUND_COLORS = {
     # Suggested by @okets in issue #42
@@ -68,7 +75,8 @@ for folder, fname in folder_fname:
                     folder=folder,
                     which=which,
                     app_header_background_color=app_header_background_color,
-                    background_jpg=str(background.name),
+                    background_jpg=base64_encode_file(background),
+                    # background_jpg=str(background.name),
                     color=color,
                     suffix=suffix,
                 )
