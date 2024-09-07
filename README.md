@@ -26,6 +26,97 @@ Installing this theme adds 28 different themes:
 - `ios-dark-mode-dark-blue`
 - `...` and versions with the `-alternative` suffix
 
+---
+
+## **🖼️ Backgrounds: Remote vs Local**
+
+As of version **3.0.0**, we have introduced an alternative to Base64-encoded background images to boost performance.
+
+By default, iOS Themes now use **remote background images** hosted on GitHub for faster caching and loading times. However, for users that prefer to host images locally on their Home Assistant setup (or in environments with poor internet connectivity), `-alternative` versions of the themes are available, which use locally hosted background images.
+
+### **Remote Backgrounds (Default)**
+
+- The default themes use background images stored in our GitHub repository.
+- To switch to the default themes, no configuration beyond the installation steps is necessary.
+
+### **Local Backgrounds (Alternative Versions)**
+
+For the alternative themes, you will need to **download the images and store them locally** in your Home Assistant's `/config/www/ios-themes` directory. Home Assistant automatically serves files from the `www` folder under `/local/`.
+
+---
+
+<details>
+<summary>📥 How to Download Backgrounds for Local Use (Alternative Themes)</summary>
+
+### **Step-by-Step Local Background Setup**:
+
+To use locally hosted background images, follow the instructions below.
+
+1. **Create the necessary directory**:
+   Open a terminal (or SSH into your Home Assistant setup) and run the following command to ensure the correct folder structure is in place:
+   ```bash
+   mkdir -p /config/www/ios-themes
+   ```
+
+2. **Download the background images**:
+   Download the required background images using `wget` commands. This will store them in the `/config/www/ios-themes` folder.
+   
+   For example:
+   ```bash
+   # Dark Blue background
+   wget -O /config/www/ios-themes/homekit-bg-dark-blue.jpg https://raw.githubusercontent.com/basnijholt/lovelace-ios-themes/master/themes/homekit-bg-dark-blue.jpg
+   
+   # Light Blue background
+   wget -O /config/www/ios-themes/homekit-bg-dark-blue.jpg https://raw.githubusercontent.com/basnijholt/lovelace-ios-themes/master/themes/homekit-bg-light-blue.jpg
+   
+   # Add more backgrounds as needed for other themes
+   ```
+
+   Repeat the command for all the backgrounds you need (ensure to replace `dark-blue.jpg` with the appropriate background name from the themes you're using).
+
+3. **Switch to the alternative theme**:
+   In your Home Assistant profile settings, select the **alternative version** of the theme you want to use.  
+   Example: `ios-dark-mode-dark-blue-alternative`
+
+   **Important:** For images hosted locally, the background paths in the theme are referenced as `/local/ios-themes/...`.
+
+---
+
+### **Command Summary for Downloading Backgrounds**:
+
+Here are commands to download all available backgrounds:
+
+```bash
+# Dark Blue
+wget -O /config/www/ios-themes/homekit-bg-dark-blue.jpg https://raw.githubusercontent.com/basnijholt/lovelace-ios-themes/master/themes/homekit-bg-dark-blue.jpg
+
+# Light Blue
+wget -O /config/www/ios-themes/homekit-bg-light-blue.jpg https://raw.githubusercontent.com/basnijholt/lovelace-ios-themes/master/themes/homekit-bg-light-blue.jpg
+
+# Dark Green
+wget -O /config/www/ios-themes/homekit-bg-dark-green.jpg https://raw.githubusercontent.com/basnijholt/lovelace-ios-themes/master/themes/homekit-bg-dark-green.jpg
+
+# Light Green
+wget -O /config/www/ios-themes/homekit-bg-light-green.jpg https://raw.githubusercontent.com/basnijholt/lovelace-ios-themes/master/themes/homekit-bg-light-green.jpg
+
+# Orange
+wget -O /config/www/ios-themes/homekit-bg-orange.jpg https://raw.githubusercontent.com/basnijholt/lovelace-ios-themes/master/themes/homekit-bg-orange.jpg
+
+# Blue Red
+wget -O /config/www/ios-themes/homekit-bg-blue-red.jpg https://raw.githubusercontent.com/basnijholt/lovelace-ios-themes/master/themes/homekit-bg-blue-red.jpg
+
+# Red
+wget -O /config/www/ios-themes/homekit-bg-red.jpg https://raw.githubusercontent.com/basnijholt/lovelace-ios-themes/master/themes/homekit-bg-red.jpg
+```
+
+---
+
+After placing the images in the `/config/www/ios-themes/` directory, reload your Home Assistant theme settings (or restart Home Assistant) and enjoy using the responsive, locally hosted backgrounds!
+
+</details>
+
+---
+
 ## Screenshots
 
 Screenshots of [my](https://github.com/basnijholt) Home-Assistant instance, [see the config files here :octocat:](https://github.com/basnijholt/home-assistant-config/).
