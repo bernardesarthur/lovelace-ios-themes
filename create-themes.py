@@ -4,7 +4,6 @@
 
 from pathlib import Path
 
-import base64
 import jinja2
 import yaml
 from PIL import Image
@@ -12,6 +11,12 @@ from PIL import ImageColor
 
 with open("settings-light-dark.yaml", "r") as f:
     all_settings = yaml.safe_load(f)
+
+COMMIT = "a37376d918fcfe4785be99910dc9a7200ac37da9"
+
+BASE_URL = (
+    f"https://raw.githubusercontent.com/basnijholt/lovelace-ios-themes/{COMMIT}/themes"
+)
 
 
 def parse(x):
@@ -25,11 +30,13 @@ def average_color(fname):
     return "rgba({}, {}, {}, 0.4)".format(*rgb_color)
 
 
-def base64_encode_file(fname):
-    with open(fname, 'rb') as image_file:
-        extension = fname.suffix.split('.')[-1]
-        base64_utf8_str = base64.b64encode(image_file.read()).decode('utf-8')
-        return f'data:image/{extension};base64,{base64_utf8_str}'
+def fname_to_url(background: Path):
+    return f"{BASE_URL}/{background.name}"
+
+
+def fname_to_local_path(folder: str, background: Path):
+    return f"/{folder}/themes/ios-themes/{background.name}"
+
 
 BACKGROUND_COLORS = {
     # Suggested by @okets in issue #42
@@ -58,10 +65,10 @@ for folder, fname in folder_fname:
         else:
             app_header_background_color = average_color(background)
         for which in ["light", "dark"]:
-            for state_icon_yellow in [False, True]:
+            for standard in [False, True]:
                 settings = {k: parse(v[which]) for k, v in all_settings.items()}
 
-                if state_icon_yellow:
+                if standard:
                     settings["state_icon_active_color"] = "rgba(255, 214, 10, 1)"
                     suffix = ""
                 else:
@@ -75,8 +82,9 @@ for folder, fname in folder_fname:
                     folder=folder,
                     which=which,
                     app_header_background_color=app_header_background_color,
-                    background_jpg=base64_encode_file(background),
-                    # background_jpg=str(background.name),
+                    background=fname_to_url(background)
+                    if standard
+                    else fname_to_local_path(folder, background),
                     color=color,
                     suffix=suffix,
                 )
