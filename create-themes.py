@@ -6,10 +6,9 @@ from pathlib import Path
 
 import jinja2
 import yaml
-from PIL import Image
-from PIL import ImageColor
+from PIL import Image, ImageColor
 
-with open("settings-light-dark.yaml", "r") as f:
+with open("settings-light-dark.yaml") as f:
     all_settings = yaml.safe_load(f)
 
 COMMIT = "a37376d918fcfe4785be99910dc9a7200ac37da9"
@@ -30,12 +29,12 @@ def average_color(fname):
     return "rgba({}, {}, {}, 0.4)".format(*rgb_color)
 
 
-def fname_to_url(background: Path):
+def fname_to_url(background: Path) -> str:
     return f"{BASE_URL}/{background.name}"
 
 
-def fname_to_local_path(folder: str, background: Path):
-    return f"/{folder}/themes/ios-themes/{background.name}"
+def fname_to_local_path(background: Path) -> str:
+    return f"/local/ios-themes/{background.name}"
 
 
 BACKGROUND_COLORS = {
@@ -49,45 +48,40 @@ BACKGROUND_COLORS = {
     "red": "rgba(234, 88, 63, 0.4)",
 }
 
+fname = Path("themes/ios-themes.yaml")
+fname.parent.mkdir(parents=True, exist_ok=True)
 
-folder_fname = [
-    ("hacsfiles", Path("themes/ios-themes.yaml")),
-    ("local", Path("manual-install/ios-themes.yaml")),
-]
-for folder, fname in folder_fname:
-    fname.parent.mkdir(parents=True, exist_ok=True)
-    with fname.open("w") as f:
-        f.write("---\n# From https://github.com/basnijholt/lovelace-ios-themes")
-    for background in sorted(Path("themes").glob("homekit-bg-*.jpg")):
-        color = background.stem.split("homekit-bg-")[-1]
-        if color in BACKGROUND_COLORS:
-            app_header_background_color = BACKGROUND_COLORS[color]
-        else:
-            app_header_background_color = average_color(background)
-        for which in ["light", "dark"]:
-            for standard in [False, True]:
-                settings = {k: parse(v[which]) for k, v in all_settings.items()}
+with fname.open("w") as f:
+    f.write("---\n# From https://github.com/basnijholt/lovelace-ios-themes")
+for background in sorted(Path("themes").glob("homekit-bg-*.jpg")):
+    color = background.stem.split("homekit-bg-")[-1]
+    if color in BACKGROUND_COLORS:
+        app_header_background_color = BACKGROUND_COLORS[color]
+    else:
+        app_header_background_color = average_color(background)
+    for which in ["light", "dark"]:
+        for standard in [False, True]:
+            settings = {k: parse(v[which]) for k, v in all_settings.items()}
 
-                if standard:
-                    settings["state_icon_active_color"] = "rgba(255, 214, 10, 1)"
-                    suffix = ""
-                else:
-                    suffix = "-alternative"
+            if standard:
+                settings["state_icon_active_color"] = "rgba(255, 214, 10, 1)"
+                suffix = ""
+            else:
+                suffix = "-alternative"
 
-                with open("template.jinja2") as f:
-                    template = jinja2.Template("".join(f.readlines()))
+            with open("template.jinja2") as f:
+                template = jinja2.Template("".join(f.readlines()))
 
-                result = template.render(
-                    **settings,
-                    folder=folder,
-                    which=which,
-                    app_header_background_color=app_header_background_color,
-                    background=fname_to_url(background)
-                    if standard
-                    else fname_to_local_path(folder, background),
-                    color=color,
-                    suffix=suffix,
-                )
+            result = template.render(
+                **settings,
+                which=which,
+                app_header_background_color=app_header_background_color,
+                background=fname_to_url(background)
+                if standard
+                else fname_to_local_path(background),
+                color=color,
+                suffix=suffix,
+            )
 
-                with fname.open("a") as f:
-                    f.write("\n" + result + "\n")
+            with fname.open("a") as f:
+                f.write("\n" + result + "\n")
